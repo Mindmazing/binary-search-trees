@@ -33,6 +33,20 @@ class Tree {
 
     return node;
   }
+
+  includes(value, node = this.root) {
+    if (node.data === value) {
+      return true;
+    }
+
+    if (value > node.data) {
+      return this.includes(value, node.right);
+    } else if (value < node.data) {
+      return this.includes(value, node.left);
+    }
+
+    return false;
+  }
 }
 
 const prettyPrint = (node, prefix = "", isLeft = true) => {
@@ -46,5 +60,5 @@ const prettyPrint = (node, prefix = "", isLeft = true) => {
 };
 
 let tree = new Tree([1, 80, 2, 3, 20, 20, 30, 4, 5, 6, 8, 9, 19, 20, 30]);
-
 prettyPrint(tree.root);
+console.log(tree.includes(30));
