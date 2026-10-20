@@ -1,8 +1,8 @@
 class Node {
   constructor(data) {
     this.data = data;
-    this.left;
-    this.right;
+    this.left = undefined;
+    this.right = undefined;
   }
 }
 
@@ -23,7 +23,7 @@ class Tree {
     if (arr.length === 1) {
       return new Node(arr[midIndex]);
     } else if (arr.length === 0) {
-      return new Node("N");
+      return;
     }
 
     // set node with mid index element and assign other nodes to left and right elements
@@ -34,18 +34,40 @@ class Tree {
     return node;
   }
 
-  includes(value, node = this.root) {
-    if (node.data === value) {
-      return true;
+  includes(value, node) {
+    if (arguments.length === 1) {
+      node = this.node;
     }
+
+    if (!node) return false;
+
+    if (node.data === value) return true;
 
     if (value > node.data) {
       return this.includes(value, node.right);
     } else if (value < node.data) {
       return this.includes(value, node.left);
     }
+  }
 
-    return false;
+  insert(value) {
+    let previousNode;
+    let node = this.root;
+    while (node) {
+      previousNode = node;
+      if (value > node.data) {
+        node = node.right;
+      } else {
+        node = node.left;
+      }
+    }
+    node = new Node(value);
+
+    if (previousNode.data < value) {
+      previousNode.right = node;
+    } else {
+      previousNode.left = node;
+    }
   }
 }
 
@@ -53,12 +75,19 @@ const prettyPrint = (node, prefix = "", isLeft = true) => {
   if (node === null || node === undefined) {
     return;
   }
-
   prettyPrint(node.right, `${prefix}${isLeft ? "│   " : "    "}`, false);
   console.log(`${prefix}${isLeft ? "└── " : "┌── "}${node.data}`);
   prettyPrint(node.left, `${prefix}${isLeft ? "    " : "│   "}`, true);
 };
 
-let tree = new Tree([1, 80, 2, 3, 20, 20, 30, 4, 5, 6, 8, 9, 19, 20, 30]);
+let tree = new Tree([1, 2, 3, 4, 5, 6, 7, 9, 10]);
 prettyPrint(tree.root);
-console.log(tree.includes(30));
+
+tree.insert(20);
+tree.insert(25);
+tree.insert(23);
+tree.insert(22);
+
+console.log(tree.includes(2223));
+
+prettyPrint(tree.root);
