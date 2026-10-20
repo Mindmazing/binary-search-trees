@@ -36,11 +36,10 @@ class Tree {
 
   includes(value, node) {
     if (arguments.length === 1) {
-      node = this.node;
+      node = this.root;
     }
 
     if (!node) return false;
-
     if (node.data === value) return true;
 
     if (value > node.data) {
@@ -88,6 +87,6 @@ tree.insert(25);
 tree.insert(23);
 tree.insert(22);
 
-console.log(tree.includes(2223));
+console.log(tree.includes(2523));
 
 prettyPrint(tree.root);
