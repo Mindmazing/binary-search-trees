@@ -75,93 +75,95 @@ class Tree {
     }
   }
 
-  deleteItem(value) {
-    let node = this.root;
-    let parentNode = this.root;
-    let leftChild, rightChild, leftActive;
+  deleteItem(...values) {
+    let node, parentNode, leftChild, rightChild, leftActive;
+    for (let value of values) {
+      node = this.root;
+      parentNode = this.root;
 
-    while (node) {
-      [leftChild, rightChild] = [node.left, node.right];
-      if (node.data === value) {
-        // node with 2 child
-        if (leftChild && rightChild) {
-          // find the min value in the right branch
-          let nodeRightUtmost;
-          let parentNodeUtmost = node;
-          nodeRightUtmost = node.right;
+      while (node) {
+        [leftChild, rightChild] = [node.left, node.right];
+        if (node.data === value) {
+          // node with 2 child
+          if (leftChild && rightChild) {
+            // find the min value in the right branch
+            let nodeRightUtmost;
+            let parentNodeUtmost = node;
+            nodeRightUtmost = node.right;
 
-          while (nodeRightUtmost.left) {
-            parentNodeUtmost = nodeRightUtmost;
-            nodeRightUtmost = nodeRightUtmost.left;
+            while (nodeRightUtmost.left) {
+              parentNodeUtmost = nodeRightUtmost;
+              nodeRightUtmost = nodeRightUtmost.left;
+            }
+
+            // parent node must point to nothing
+            if (parentNodeUtmost.left.data === nodeRightUtmost.data) {
+              parentNodeUtmost.left = undefined;
+            } else {
+              parentNodeUtmost.right = undefined;
+            }
+
+            // assign right and left data to node right utmost
+            nodeRightUtmost.right = node.right;
+            nodeRightUtmost.left = node.left;
+
+            if (node.data === this.root.data) {
+              // replace root with the smallest right node
+              this.root = nodeRightUtmost;
+            } else {
+              if (leftActive) {
+                parentNode.left = nodeRightUtmost;
+              } else {
+                parentNode.right = nodeRightUtmost;
+              }
+            }
+            break;
           }
 
-          // parent node must point to nothing
-          if (parentNodeUtmost.left.data === nodeRightUtmost.data) {
-            parentNodeUtmost.left = undefined;
-          } else {
-            parentNodeUtmost.right = undefined;
+          // root node or simple node with no child case
+          if (!leftChild && !rightChild) {
+            // Case root node with no child
+            if (node.data === this.root.data) {
+              this.root = undefined;
+              break;
+            }
+
+            // node with no child
+            if (leftActive) {
+              parentNode.left = undefined;
+            } else {
+              parentNode.right = undefined;
+            }
+            break;
           }
 
-          // assign right and left data to node right utmost
-          nodeRightUtmost.right = node.right;
-          nodeRightUtmost.left = node.left;
-
-          if (node.data === this.root.data) {
-            // replace root with the smallest right node
-            this.root = nodeRightUtmost;
+          // node with 1 child
+          if ((!leftChild || !rightChild) && node.data === this.root.data) {
+            this.root = leftChild ? leftChild : rightChild;
+          }
+          if (!leftChild) {
+            if (leftActive) {
+              parentNode.left = rightChild;
+            } else {
+              parentNode.right = rightChild;
+            }
           } else {
             if (leftActive) {
-              parentNode.left = nodeRightUtmost;
+              parentNode.left = leftChild;
             } else {
-              parentNode.right = nodeRightUtmost;
+              parentNode.right = leftChild;
             }
           }
-          return;
         }
 
-        // root node or simple node with no child case
-        if (!leftChild && !rightChild) {
-          // Case root node with no child
-          if (node.data === this.root.data) {
-            this.root = undefined;
-            return;
-          }
-
-          // node with no child
-          if (leftActive) {
-            parentNode.left = undefined;
-          } else {
-            parentNode.right = undefined;
-          }
-          return;
-        }
-
-        // node with 1 child
-        if ((!leftChild || !rightChild) && node.data === this.root.data) {
-          this.root = leftChild ? leftChild : rightChild;
-        }
-        if (!leftChild) {
-          if (leftActive) {
-            parentNode.left = rightChild;
-          } else {
-            parentNode.right = rightChild;
-          }
+        parentNode = node;
+        if (value > node.data) {
+          node = node.right;
+          leftActive = false;
         } else {
-          if (leftActive) {
-            parentNode.left = leftChild;
-          } else {
-            parentNode.right = leftChild;
-          }
+          node = node.left;
+          leftActive = true;
         }
-      }
-
-      parentNode = node;
-      if (value > node.data) {
-        node = node.right;
-        leftActive = false;
-      } else {
-        node = node.left;
-        leftActive = true;
       }
     }
   }
@@ -178,5 +180,5 @@ const prettyPrint = (node, prefix = "", isLeft = true) => {
 
 let tree = new Tree([1, 3, 2, 4, 6, 7, 8, 9, 10, 11]);
 prettyPrint(tree.root);
-
+tree.deleteItem(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
 prettyPrint(tree.root);
