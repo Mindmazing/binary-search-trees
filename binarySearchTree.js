@@ -167,6 +167,30 @@ class Tree {
       }
     }
   }
+
+  levelOrderForEach(callback) {
+    if (typeof callback !== "function") {
+      throw new Error("Callback required");
+    }
+
+    let queue = [this.root];
+    let node;
+
+    while (queue.length) {
+      node = queue[0];
+      // call function
+      callback(node.data);
+      //queue children if they exist
+      if (node.left) {
+        queue.push(node.left);
+      }
+      if (node.right) {
+        queue.push(node.right);
+      }
+      //delete from queue
+      queue.shift();
+    }
+  }
 }
 
 const prettyPrint = (node, prefix = "", isLeft = true) => {
@@ -178,7 +202,10 @@ const prettyPrint = (node, prefix = "", isLeft = true) => {
   prettyPrint(node.left, `${prefix}${isLeft ? "    " : "│   "}`, true);
 };
 
-let tree = new Tree([1, 3, 2, 4, 6, 7, 8, 9, 10, 11]);
+let tree = new Tree([1, 3, 2, 4, 6, 7, 8, 9, 10, 11, 12]);
 prettyPrint(tree.root);
-tree.deleteItem(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+tree.deleteItem(8, 4, 1);
+tree.levelOrderForEach((data) => {
+  console.log(`Level Order Traversal: ${data}`);
+});
 prettyPrint(tree.root);
