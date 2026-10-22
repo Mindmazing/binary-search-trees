@@ -6,7 +6,7 @@ class Node {
   }
 }
 
-class Tree {
+export class Tree {
   constructor(arr) {
     // sort array
     arr.sort((a, b) => a - b);
@@ -300,21 +300,30 @@ class Tree {
 
     return this.isBalanced(node.left) && this.isBalanced(node.right);
   }
-}
 
-const prettyPrint = (node, prefix = "", isLeft = true) => {
-  if (node === null || node === undefined) {
-    return;
+  rebalance() {
+    let treeNodesData = [];
+    this.preOrderForEach((data) => {
+      treeNodesData.push(data);
+    });
+
+    // sort array
+    treeNodesData.sort((a, b) => a - b);
+    // remove duplicates
+    treeNodesData = [...new Set(treeNodesData)];
+    this.root = this.#buildTree(treeNodesData);
   }
-  prettyPrint(node.right, `${prefix}${isLeft ? "│   " : "    "}`, false);
-  console.log(`${prefix}${isLeft ? "└── " : "┌── "}${node.data}`);
-  prettyPrint(node.left, `${prefix}${isLeft ? "    " : "│   "}`, true);
-};
 
-let tree = new Tree([3, 2, 4, 6, 7, 8, 9]);
-tree.insert(1, 22, 33, 44, 55, 66);
+  prettyPrint(node, prefix = "", isLeft = true) {
+    if (!arguments.length) {
+      node = this.root;
+    }
 
-prettyPrint(tree.root);
-console.log(tree.height(33));
-console.log(tree.depth(33));
-console.log(tree.isBalanced());
+    if (node === null || node === undefined) {
+      return;
+    }
+    this.prettyPrint(node.right, `${prefix}${isLeft ? "│   " : "    "}`, false);
+    console.log(`${prefix}${isLeft ? "└── " : "┌── "}${node.data}`);
+    this.prettyPrint(node.left, `${prefix}${isLeft ? "    " : "│   "}`, true);
+  }
+}
