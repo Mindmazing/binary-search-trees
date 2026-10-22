@@ -191,6 +191,84 @@ class Tree {
       queue.shift();
     }
   }
+
+  preOrderForEach(callback, node) {
+    if (arguments.length === 1) {
+      node = this.root;
+    }
+    if (!node) return;
+    if (typeof callback !== "function") {
+      throw new Error("Callback required");
+    }
+
+    // call function on node
+    callback(node.data);
+    this.preOrderForEach(callback, node.left);
+    this.preOrderForEach(callback, node.right);
+  }
+
+  inOrderForEach(callback, node) {
+    if (arguments.length === 1) {
+      node = this.root;
+    }
+    if (!node) return;
+    if (typeof callback !== "function") {
+      throw new Error("Callback required");
+    }
+
+    // call function on node
+    this.inOrderForEach(callback, node.left);
+    callback(node.data);
+    this.inOrderForEach(callback, node.right);
+  }
+
+  postOrderForEach(callback, node) {
+    if (arguments.length === 1) {
+      node = this.root;
+    }
+    if (!node) return;
+    if (typeof callback !== "function") {
+      throw new Error("Callback required");
+    }
+
+    // call function on node
+    this.postOrderForEach(callback, node.left);
+    this.postOrderForEach(callback, node.right);
+    callback(node.data);
+  }
+
+  depth(value, depth = 0, node = this.root) {
+    if (!node) return undefined;
+
+    if (value === node.data) return depth;
+
+    return this.depth(
+      value,
+      depth + 1,
+      value > node.data ? node.right : node.left,
+    );
+  }
+
+  #heightRecursive(node) {
+    if (!node.left && !node.right) {
+      return 0;
+    }
+
+    let leftHeight = node.left ? this.#heightRecursive(node.left) + 1 : 0;
+    let rightHeight = node.right ? this.#heightRecursive(node.right) + 1 : 0;
+
+    return leftHeight > rightHeight ? leftHeight : rightHeight;
+  }
+
+  height(value, node = this.root) {
+    // find node and pass it to heightRecursive func
+    while (node) {
+      if (node.data === value) {
+        return this.#heightRecursive(node);
+      }
+      node = value > node ? node.right : node.left;
+    }
+  }
 }
 
 const prettyPrint = (node, prefix = "", isLeft = true) => {
@@ -204,8 +282,5 @@ const prettyPrint = (node, prefix = "", isLeft = true) => {
 
 let tree = new Tree([1, 3, 2, 4, 6, 7, 8, 9, 10, 11, 12]);
 prettyPrint(tree.root);
-tree.deleteItem(8, 4, 1);
-tree.levelOrderForEach((data) => {
-  console.log(`Level Order Traversal: ${data}`);
-});
-prettyPrint(tree.root);
+
+console.log(tree.depth(7));
