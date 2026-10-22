@@ -49,29 +49,31 @@ class Tree {
     }
   }
 
-  insert(value) {
-    let previousNode;
-    let node = this.root;
+  insert(...values) {
+    let previousNode, node;
+    for (let value of values) {
+      node = this.root;
 
-    if (!node) {
-      this.root = new Node(value);
-      return;
-    }
-
-    while (node) {
-      previousNode = node;
-      if (value > node.data) {
-        node = node.right;
-      } else {
-        node = node.left;
+      if (!node) {
+        this.root = new Node(value);
+        return;
       }
-    }
-    node = new Node(value);
 
-    if (previousNode.data < value) {
-      previousNode.right = node;
-    } else {
-      previousNode.left = node;
+      while (node) {
+        previousNode = node;
+        if (value > node.data) {
+          node = node.right;
+        } else {
+          node = node.left;
+        }
+      }
+      node = new Node(value);
+
+      if (previousNode.data < value) {
+        previousNode.right = node;
+      } else {
+        previousNode.left = node;
+      }
     }
   }
 
@@ -237,7 +239,10 @@ class Tree {
     callback(node.data);
   }
 
-  depth(value, depth = 0, node = this.root) {
+  depth(value, depth = 0, node) {
+    if (arguments.length === 2) {
+      node = this.root;
+    }
     if (!node) return undefined;
 
     if (value === node.data) return depth;
@@ -250,6 +255,10 @@ class Tree {
   }
 
   #heightRecursive(node) {
+    if (!node) {
+      return 0;
+    }
+
     if (!node.left && !node.right) {
       return 0;
     }
@@ -266,8 +275,30 @@ class Tree {
       if (node.data === value) {
         return this.#heightRecursive(node);
       }
-      node = value > node ? node.right : node.left;
+      node = value > node.data ? node.right : node.left;
     }
+    return undefined;
+  }
+
+  isBalanced(node) {
+    if (!arguments.length) {
+      node = this.root;
+    }
+
+    if (!node) {
+      return true;
+    }
+
+    // get length of left element and right element
+    let leftHeight = this.#heightRecursive(node.left);
+    let righHeight = this.#heightRecursive(node.right);
+
+    // check difference between heights
+    if (Math.abs(leftHeight - righHeight) > 1) {
+      return false;
+    }
+
+    return this.isBalanced(node.left) && this.isBalanced(node.right);
   }
 }
 
@@ -280,7 +311,10 @@ const prettyPrint = (node, prefix = "", isLeft = true) => {
   prettyPrint(node.left, `${prefix}${isLeft ? "    " : "│   "}`, true);
 };
 
-let tree = new Tree([1, 3, 2, 4, 6, 7, 8, 9, 10, 11, 12]);
-prettyPrint(tree.root);
+let tree = new Tree([3, 2, 4, 6, 7, 8, 9]);
+tree.insert(1, 22, 33, 44, 55, 66);
 
-console.log(tree.depth(7));
+prettyPrint(tree.root);
+console.log(tree.height(33));
+console.log(tree.depth(33));
+console.log(tree.isBalanced());
